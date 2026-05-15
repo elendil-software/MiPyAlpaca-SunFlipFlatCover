@@ -1,0 +1,11 @@
+{
+  "cover": {
+    "enabled": true,
+    "servo_number": 1,
+    "servo_open_angle": 262,
+    "servo_close_angle": 1,
+    "max_degrees": 270,
+    "move_time_ms": 3000
+  }
+}
+
