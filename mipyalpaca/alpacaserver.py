@@ -213,8 +213,10 @@ async def appDiscovery(server):
                print("Broadcast received")
                data, address=s.recvfrom(1024)
                # reply with own port
-               send_data = "{\n   \"AlpacaPort\":"+srv.config["serverPort"]+"\n}"
-               s.sendto(send_data.encode('utf-8'), address)
+               datascii = str(data, 'ascii')
+               if 'alpacadiscovery1' in datascii:
+                   send_data = "{\"AlpacaPort\":"+srv.config["serverPort"]+"}"
+                   s.sendto(send_data.encode('utf-8'), address)
        await uasyncio.sleep_ms(10)
 
 
