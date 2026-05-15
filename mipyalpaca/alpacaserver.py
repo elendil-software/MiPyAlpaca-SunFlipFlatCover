@@ -196,7 +196,9 @@ class AlpacaServer:
 async def appDiscovery(server):
     srv = server
     s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind(('',int(srv.config["discoveryPort"])))
+    ip = network.WLAN(network.STA_IF).ifconfig()[0]
+
+    s.bind((ip,int(srv.config["discoveryPort"])))
 
     print("Start Discovery")
     poller = uselect.poll()
