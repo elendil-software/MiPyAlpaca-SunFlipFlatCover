@@ -29,6 +29,9 @@ class AlpacaDevice:
     def GET_connected(self, request):
         return self.reply(request, self.connectedState)
 
+    def GET_connecting(self, request):
+        return self.reply(request, 0)
+
     # return device name
     def GET_name(self, request):
         return self.reply(request, self.name)
