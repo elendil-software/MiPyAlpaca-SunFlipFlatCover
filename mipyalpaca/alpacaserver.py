@@ -2,7 +2,7 @@ import ujson
 import uasyncio
 import uselect
 import socket
-from microdot_asyncio import Microdot
+from microdot_asyncio import Microdot, redirect
 from microdot_utemplate import render_template
 from microdot_asyncio import Response
 import network
