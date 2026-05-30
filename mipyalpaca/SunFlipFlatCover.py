@@ -1,5 +1,5 @@
 from mipyalpaca.alpacacover import CoverCalibratorDevice, CoverStatus
-from mipyalpaca.alpacaserver import readJson
+from mipyalpaca.alpacaserver import readJson, NotImplementedError
 from mipyalpaca.SimplyServos import KitronikSimplyServos
 from microdot_utemplate import render_template
 import uasyncio
@@ -47,9 +47,15 @@ class SunFlipFlatCover(CoverCalibratorDevice):
         self._covermoving = False
 
     def opencover(self):
+        # Set state synchronously so coverstate/covermoving are already MOVING
+        # before the HTTP response is sent (create_task defers execution).
+        self._covermoving = True
+        self._coverstate = CoverStatus.MOVING
         uasyncio.create_task(self._move_cover(CoverStatus.OPEN))
 
     def closecover(self):
+        self._covermoving = True
+        self._coverstate = CoverStatus.MOVING
         uasyncio.create_task(self._move_cover(CoverStatus.CLOSED))
 
     def haltcover(self):
