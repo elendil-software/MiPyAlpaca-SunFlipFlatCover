@@ -32,7 +32,7 @@ class AlpacaDevice:
         val = request.form.get('Connected')
         if (val != "True") and (val != "False"):
             return "Invalid connection value", 400
-        self.connectedState = bool(val)
+        self.connectedState = (val == "True")
         return self.reply(request)
 
     # get connection status
@@ -40,7 +40,7 @@ class AlpacaDevice:
         return self.reply(request, self.connectedState)
 
     def GET_connecting(self, request):
-        return self.reply(request, 0)
+        return self.reply(request, False)
 
     # Platform 7+: returns device operational state as a list of {Name, Value} items
     # Subclasses should override get_device_state_items() to add device-specific properties
