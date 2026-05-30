@@ -17,6 +17,16 @@ class AlpacaDevice:
     def reply(self, request, value=None, err_nr=0, err_msg=""):
         return AlpacaServer.reply(request, value, err_nr, err_msg)
     
+    # Platform 7+: initiate asynchronous connect
+    def PUT_connect(self, request):
+        self.connectedState = True
+        return self.reply(request)
+
+    # Platform 7+: initiate asynchronous disconnect
+    def PUT_disconnect(self, request):
+        self.connectedState = False
+        return self.reply(request)
+
     # set connection status
     def PUT_connected(self, request):
         val = request.form.get('Connected')
@@ -31,6 +41,17 @@ class AlpacaDevice:
 
     def GET_connecting(self, request):
         return self.reply(request, 0)
+
+    # Platform 7+: returns device operational state as a list of {Name, Value} items
+    # Subclasses should override get_device_state_items() to add device-specific properties
+    def GET_devicestate(self, request):
+        items = []
+        items.extend(self.get_device_state_items())
+        return self.reply(request, items)
+
+    # Override in subclasses to add device-specific state items
+    def get_device_state_items(self):
+        return []
 
     # return device name
     def GET_name(self, request):
