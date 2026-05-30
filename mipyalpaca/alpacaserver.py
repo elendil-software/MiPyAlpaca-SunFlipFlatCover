@@ -162,7 +162,7 @@ class AlpacaServer:
     # start Microdot Alpaca server
     @classmethod
     async def startServer(cls):
-            await alpaca_app.start_server(port=int(AlpacaServer.config["serverPort"]), debug=True)
+            await alpaca_app.start_server(port=int(AlpacaServer.config["serverPort"]), debug=False)
             
             
     # connect to WLAN in station mode            
