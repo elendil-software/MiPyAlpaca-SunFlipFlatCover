@@ -1,4 +1,4 @@
-{% args title, tab, srvcfg %}
+{% args title, srvcfg %}
 <!DOCTYPE html>
 <html>
 
@@ -100,26 +100,6 @@
       <h3>Server settings</h3>
     </div>
 
-
-    <p><b>The following devices are configured on this Alpaca Server:</b></p>
-    <table class="center">
-      <thead>
-        <tr>
-          <td class="boldyellow">Device Type</td>
-          <td class="boldyellow">Device Number</td>
-          <td class="boldyellow">Description</td>
-        </tr>
-      </thead>
-      <tbody>
-        {% for device in tab %}
-        <tr>
-          <td>{{ device["DeviceType"] }}</td>
-          <td>{{ device["DeviceNumber"] }}</td>
-          <td>{{ device["DeviceName"] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table><br>
 
 
     <form form method="POST">

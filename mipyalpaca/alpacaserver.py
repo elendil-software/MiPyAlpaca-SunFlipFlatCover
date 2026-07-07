@@ -282,4 +282,4 @@ async def setup(req):
         AlpacaServer.config["discoveryPort"] = req.form.get('discport')
         writeJson("servercfg.json", AlpacaServer.config)
     # render server setup page    
-    return render_template('mipysetup.html', title="RasPi Pico Alpaca Server Setup", tab = AlpacaServer.getConfDevices(), srvcfg = AlpacaServer.config)
+    return render_template('mipysetup.html', title="RasPi Pico Alpaca Server Setup", srvcfg = AlpacaServer.config)
