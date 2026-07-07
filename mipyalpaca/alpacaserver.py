@@ -296,4 +296,4 @@ async def setup(req):
         AlpacaServer.config["apPassword"] = req.form.get('appassword')
         writeJson("servercfg.json", AlpacaServer.config)
     # render server setup page    
-    return render_template('mipysetup.html', title="RasPi Pico Alpaca Server Setup", srvcfg = AlpacaServer.config)
+    return render_template('mipysetup.html', srvcfg = AlpacaServer.config)
