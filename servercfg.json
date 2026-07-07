@@ -1,1 +1,1 @@
-{"discoveryPort": "32227", "serverPort": "20000"}
+{"discoveryPort": "32227", "serverPort": "20000", "networkMode": "station", "apSsid": "SunFlipFlatCover", "apPassword": "alpaca1234"}

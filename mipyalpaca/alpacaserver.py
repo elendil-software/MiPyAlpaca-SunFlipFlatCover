@@ -67,7 +67,8 @@ class AlpacaServer:
     __instance = None
     config = {}
     devices = {}
-    wlan = None
+    wlan = None          # active WLAN interface object
+    wlan_if_type = None  # network.STA_IF or network.AP_IF
     ServerTransactionID = 1
     ServerApiVersions = [1]
     ServerName = ""
@@ -137,6 +138,14 @@ class AlpacaServer:
     def getServerDescr(cls):
         return {"ServerName":AlpacaServer.ServerName, "Manufacturer":AlpacaServer.Manufacturer, "ManufacturerVersion":AlpacaServer.ManfVersion, "Location":AlpacaServer.ManfLocation}
 
+    # Return current IP address regardless of network mode
+    @classmethod
+    def getIP(cls):
+        if AlpacaServer.wlan is not None:
+            return AlpacaServer.wlan.ifconfig()[0]
+        # Fallback: try station interface
+        return network.WLAN(network.STA_IF).ifconfig()[0]
+
     # call API method from request
     @classmethod
     def callMethod(cls, dev_type, dev_nr, method, request):
@@ -169,26 +178,27 @@ class AlpacaServer:
     @classmethod
     def connectStationMode(cls, ssid, password):
         wlan = network.WLAN(network.STA_IF)
-
         if not wlan.isconnected():
             print('Connecting to ' + ssid, end=' ')
             wlan.active(True)
             wlan.connect(ssid, password)
             while not wlan.isconnected():
                 pass
+        AlpacaServer.wlan = wlan
+        AlpacaServer.wlan_if_type = network.STA_IF
         print('\nConnected to IP address ' + wlan.ifconfig()[0])
 
 
-    # Start as WLAN access point
+    # Start as WLAN access point (no external WiFi needed)
     @classmethod
     def startAccessPoint(cls, ssid, password):
         wlan = network.WLAN(network.AP_IF)
-        
         wlan.config(essid=ssid, password=password)
         wlan.active(True)
-
-        while wlan.active() == False:
-          pass
+        while not wlan.active():
+            pass
+        AlpacaServer.wlan = wlan
+        AlpacaServer.wlan_if_type = network.AP_IF
         print('\nAccessPoint active, IP address ' + wlan.ifconfig()[0])
 
 
@@ -196,7 +206,8 @@ class AlpacaServer:
 async def appDiscovery(server):
     srv = server
     s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ip = network.WLAN(network.STA_IF).ifconfig()[0]
+    # Use the active interface IP (works for both STA and AP modes)
+    ip = AlpacaServer.getIP()
 
     s.bind((ip,int(srv.config["discoveryPort"])))
 
@@ -280,6 +291,9 @@ async def setup(req):
     if req.method == 'POST':  # apply new settings on POST
         AlpacaServer.config["serverPort"] = req.form.get('srvport')
         AlpacaServer.config["discoveryPort"] = req.form.get('discport')
+        AlpacaServer.config["networkMode"] = req.form.get('netmode')
+        AlpacaServer.config["apSsid"] = req.form.get('apssid')
+        AlpacaServer.config["apPassword"] = req.form.get('appassword')
         writeJson("servercfg.json", AlpacaServer.config)
     # render server setup page    
     return render_template('mipysetup.html', title="RasPi Pico Alpaca Server Setup", srvcfg = AlpacaServer.config)

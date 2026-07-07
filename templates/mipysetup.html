@@ -121,12 +121,65 @@
           <input type="text" id="discport" name="discport" value={{ srvcfg["discoveryPort"] }} maxlength="5">
         </div>
       </div>
+
+      <div class="row"><br></div>
+      <div class="row">
+        <div class="col-space"></div>
+        <div class="col-label"><b>Network Mode</b></div>
+      </div>
+      <div class="row">
+        <div class="col-space"></div>
+        <div class="col-label">
+          <label for="netmode">Mode</label>
+        </div>
+        <div class="col-input">
+          <select id="netmode" name="netmode" onchange="toggleApFields()">
+            {% if srvcfg["networkMode"] == "ap" %}
+            <option value="station">Station (connect to WiFi)</option>
+            <option value="ap" selected>Access Point (no WiFi needed)</option>
+            {% else %}
+            <option value="station" selected>Station (connect to WiFi)</option>
+            <option value="ap">Access Point (no WiFi needed)</option>
+            {% endif %}
+          </select>
+        </div>
+      </div>
+      <div class="row" id="row-apssid">
+        <div class="col-space"></div>
+        <div class="col-label">
+          <label for="apssid">AP SSID</label>
+        </div>
+        <div class="col-input">
+          <input type="text" id="apssid" name="apssid" value={{ srvcfg["apSsid"] }} maxlength="32">
+        </div>
+      </div>
+      <div class="row" id="row-appassword">
+        <div class="col-space"></div>
+        <div class="col-label">
+          <label for="appassword">AP Password</label>
+        </div>
+        <div class="col-input">
+          <input type="text" id="appassword" name="appassword" value={{ srvcfg["apPassword"] }} maxlength="63">
+        </div>
+      </div>
+
       <div class="row">
         <br>
-        <input type="submit" value="Save">
+        <input type="submit" value="Save &amp; Reboot to apply">
       </div>
     </form>
   </div>
 </body>
+
+<script>
+  function toggleApFields() {
+    var mode = document.getElementById("netmode").value;
+    var visible = mode === "ap";
+    document.getElementById("row-apssid").style.display = visible ? "" : "none";
+    document.getElementById("row-appassword").style.display = visible ? "" : "none";
+  }
+  // Run on page load
+  toggleApFields();
+</script>
 
 </html>
