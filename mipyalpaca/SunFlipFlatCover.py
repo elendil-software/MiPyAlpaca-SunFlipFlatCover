@@ -1,5 +1,5 @@
 from mipyalpaca.alpacacover import CoverCalibratorDevice, CoverStatus
-from mipyalpaca.alpacaserver import readJson, NotImplementedError
+from mipyalpaca.alpacaserver import readJson, writeJson, NotImplementedError
 from mipyalpaca.SimplyServos import KitronikSimplyServos
 from microdot_utemplate import render_template
 import uasyncio
@@ -66,4 +66,20 @@ class SunFlipFlatCover(CoverCalibratorDevice):
     # ------------------------------------------------------------------ #
 
     def setupRequest(self, request):
-        return render_template('covercalibrator0.html', devname=self.name, cfgfile=self.configfile)
+        if request.method == 'POST':
+            cover_cfg = self._cfg.get("cover", {})
+            cover_cfg["servo_number"]      = int(request.form.get("servo_number", cover_cfg.get("servo_number", 1)))
+            cover_cfg["servo_open_angle"]  = int(request.form.get("servo_open_angle", cover_cfg.get("servo_open_angle", 250)))
+            cover_cfg["servo_close_angle"] = int(request.form.get("servo_close_angle", cover_cfg.get("servo_close_angle", 0)))
+            cover_cfg["max_degrees"]       = int(request.form.get("max_degrees", cover_cfg.get("max_degrees", 270)))
+            cover_cfg["move_time_ms"]      = int(request.form.get("move_time_ms", cover_cfg.get("move_time_ms", 1000)))
+            self._cfg["cover"] = cover_cfg
+            writeJson(self.configfile, self._cfg)
+            # Apply new values at runtime
+            self._servo_number      = cover_cfg["servo_number"]
+            self._servo_open_angle  = cover_cfg["servo_open_angle"]
+            self._servo_close_angle = cover_cfg["servo_close_angle"]
+            self._max_degrees       = cover_cfg["max_degrees"]
+            self._move_time_ms      = cover_cfg["move_time_ms"]
+            self._servos = KitronikSimplyServos(numberOfServos=self._servo_number, maxDegrees=self._max_degrees)
+        return render_template('covercalibrator0.html', self.name, self.configfile, self._cfg.get("cover", {}))

@@ -267,7 +267,7 @@ async def index(request):
     return redirect('/setup')
 
 # device setup page
-@alpaca_app.route('/setup/v1/<devtype>/<int:devnr>/setup', methods=['GET', 'PUT'])
+@alpaca_app.route('/setup/v1/<devtype>/<int:devnr>/setup', methods=['GET', 'PUT', 'POST'])
 async def devsetup(request,devtype,devnr):
     return AlpacaServer.devices[devtype][devnr].setupRequest(request)
 
