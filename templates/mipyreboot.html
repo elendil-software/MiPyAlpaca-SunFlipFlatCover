@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; text-align: center; background-color: #f5f5f5; }
+    .container {
+      display: inline-block;
+      margin-top: 60px;
+      border-radius: 5px;
+      background-color: rgb(249, 177, 59);
+      padding: 40px 60px;
+    }
+    .spinner {
+      margin: 20px auto;
+      width: 48px; height: 48px;
+      border: 6px solid #fff;
+      border-top-color: #088bf6;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { color: #444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Settings saved!</h2>
+    <div class="spinner"></div>
+    <p>The server is rebooting, please wait...</p>
+    <p id="countdown"></p>
+  </div>
+  <script>
+    var seconds = 10;
+    var el = document.getElementById("countdown");
+    function tick() {
+      if (seconds > 0) {
+        el.textContent = "Redirecting in " + seconds + "s...";
+        seconds--;
+        setTimeout(tick, 1000);
+      } else {
+        el.textContent = "Redirecting...";
+        window.location.href = "/setup";
+      }
+    }
+    tick();
+  </script>
+</body>
+</html>
+

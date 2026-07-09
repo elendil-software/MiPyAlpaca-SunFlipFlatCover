@@ -2,6 +2,7 @@ import ujson
 import uasyncio
 import uselect
 import socket
+import machine
 from microdot_asyncio import Microdot, redirect
 from microdot_utemplate import render_template
 from microdot_asyncio import Response
@@ -285,6 +286,11 @@ async def get_mgmt_description(request):
 async def get_mgmt_configureddevices(request):
     return AlpacaServer.reply(request, AlpacaServer.getConfDevices(), mngmnt_api=True)
 
+# Reboot the device after a short delay (to let the HTTP response be sent first)
+async def _reboot_after_delay(delay_ms=1500):
+    await uasyncio.sleep_ms(delay_ms)
+    machine.reset()
+
 # server setup page
 @alpaca_app.route('/setup', methods=['GET', 'POST'])
 async def setup(req):
@@ -295,5 +301,8 @@ async def setup(req):
         AlpacaServer.config["apSsid"] = req.form.get('apssid')
         AlpacaServer.config["apPassword"] = req.form.get('appassword')
         writeJson("servercfg.json", AlpacaServer.config)
-    # render server setup page    
+        # Schedule reboot after response is sent
+        uasyncio.create_task(_reboot_after_delay())
+        return render_template('mipyreboot.html')
+    # render server setup page
     return render_template('mipysetup.html', srvcfg = AlpacaServer.config)
